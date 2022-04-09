@@ -1,0 +1,828 @@
+{
+	"info": {
+		"_postman_id": "c780bce9-3ca1-4f13-940f-564f85b9e68e",
+		"name": "ASSEMBLER Laravel API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AUTH",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\" : \"pekechis\",\n  \"email\" : \"pekechis@gmail.com\",\n  \"password\" : \"123456\",\n  \"confirm_password\" : \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/register",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    //Set USER_TOKEN Collection VAR",
+									"    let json = pm.response.json();",
+									"    console.log(\"USER TOKEN AFTER LOGIN:\"+json.data.token);",
+									"    pm.collectionVariables.set(\"USER_TOKEN\",json.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"pekechis@gmail.com\",\n    \"password\" : \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/login",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - UnSuccessful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"",
+									"    //Set USER_TOKEN Collection VAR",
+									"    let json = pm.response.json();    ",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(false);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"pekechis@gmail.com\",\n    \"password\" : \"1234567\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/login",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PROPERTIES",
+			"item": [
+				{
+					"name": "GET ALL PROPERTIES",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD PROPERTY",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    let json = pm.response.json();",
+									"    console.log(\"Property with ID \"+json.data.id+\" CREATED\");",
+									"    pm.collectionVariables.set(\"PROPERTY_ID\",json.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n      \"title\" : \"Property 1\",\n      \"street\": \"Avinguda Castellví\",\n      \"number\": 10,\n      \"city\": \"Molins de Rei\",\n      \"province\": \"Barcelona\",\n      \"country\": \"Spain\",\n      \"status\": \"available\",\n      \"type\": \"flat/apartment\",\n      \"description\": \"This is the description of the property\",\n      \"contact_email\": \"pepito@assemblerschool.com\",\n      \"contact_phone\": \"+344767574657\",\n      \"condition\": \"new\",\n      \"room\": 2,\n      \"bath\": 1,\n      \"size\": 67,\n      \"price\": 400000,\n      \"pet\": false,\n      \"garden\": true,\n      \"air_conditioning\": true,\n      \"swimming_pool\": false,\n      \"terrace\": true,\n      \"publication_date\": \"2020/12/01 01:01:01\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/properties",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD PROPERTY II",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    let json = pm.response.json();",
+									"    console.log(\"Property with ID \"+json.data.id+\" CREATED\");",
+									"    pm.collectionVariables.set(\"PROPERTY_ID2\",json.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n      \"title\" : \"Property 2\",      \n      \"street\": \"DDDDDDD\",\n      \"number\": 10,\n      \"city\": \"asdasdasd\",\n      \"province\": \"Barcelona\",\n      \"country\": \"Spain\",\n      \"status\": \"available\",\n      \"type\": \"flat/apartment\",\n      \"description\": \"This is the description of the property\",\n      \"contact_email\": \"pepito@assemblerschool.com\",\n      \"contact_phone\": \"+344767574657\",\n      \"condition\": \"new\",\n      \"room\": 5,\n      \"bath\": 3,\n      \"size\": 200,\n      \"price\": 100000,\n      \"pet\": true,\n      \"garden\": false,\n      \"air_conditioning\": true,\n      \"swimming_pool\": false,\n      \"terrace\": true,\n      \"publication_date\": \"2020/12/01 01:01:01\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/properties",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD PROPERTY WITHOUT TOKEN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500\", function () {",
+									"    pm.response.to.have.status(500);",
+									"",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n      \"title\" : \"Property 1\",\n      \"street\": \"Avinguda Castellví\",\n      \"number\": 10,\n      \"city\": \"Molins de Rei\",\n      \"province\": \"Barcelona\",\n      \"country\": \"Spain\",\n      \"status\": \"available\",\n      \"type\": \"flat/apartment\",\n      \"description\": \"This is the description of the property\",\n      \"contact_email\": \"pepito@assemblerschool.com\",\n      \"contact_phone\": \"+344767574657\",\n      \"condition\": \"new\",\n      \"room\": 2,\n      \"bath\": 1,\n      \"size\": 67,\n      \"price\": 400000,\n      \"pet\": false,\n      \"garden\": true,\n      \"air_conditioning\": true,\n      \"swimming_pool\": false,\n      \"terrace\": true,\n      \"publication_date\": \"2020/12/01 01:01:01\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/properties",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ONE SINGLE PROPERTY DATA (EXISTS)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/{{PROPERTY_ID}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"{{PROPERTY_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET  NON EXISTENT PROPERTY DATA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(false);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/1000",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"1000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE EXISTING PROPERTY",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/{{PROPERTY_ID}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"{{PROPERTY_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE EXISTING PROPERTY II",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/{{PROPERTY_ID2}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"{{PROPERTY_ID2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE EXISTING PROPERTY WITHOUT TOKEN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/{{PROPERTY_ID}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"{{PROPERTY_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE NON EXISTING PROPERTY",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/1000",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"1000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD USER TO PROPERTY",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Success is TRUE\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Right Message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"User added to property.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/4/users/2",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"4",
+								"users",
+								"2"
+							]
+						},
+						"description": "The user has told the system that the property is one of its favourites"
+					},
+					"response": []
+				},
+				{
+					"name": "ADD USER TO PROPERTY (CHECK ERRORS)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Success is FALSE\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(false);",
+									"});",
+									"",
+									"pm.test(\"Right Message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"User already added to favourites.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/4/users/2",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"4",
+								"users",
+								"2"
+							]
+						},
+						"description": "The user has told the system that the property is one of its favourites"
+					},
+					"response": []
+				},
+				{
+					"name": "REMOVE USER TO PROPERTY RELATED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"User removed from property.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/4/users/2",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"4",
+								"users",
+								"2"
+							]
+						},
+						"description": "The user has told the system that the property is one of its favourites"
+					},
+					"response": []
+				},
+				{
+					"name": "REMOVE USER TO PROPERTY (NOT RELATED)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(false);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"User does not exist in property.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/properties/4/users/100",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties",
+								"4",
+								"users",
+								"100"
+							]
+						},
+						"description": "The user has told the system that the property is one of its favourites"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE PROPERTY (PUT)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n      \"id\" : \"{{PROPERTY_ID}}\",\n      \"title\" : \"Property 1\",\n      \"street\": \"Avinguda Castellví\",\n      \"number\": 15\n      \n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/properties",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"properties"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "USERS",
+			"item": [
+				{
+					"name": "GET ALL USERS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/users",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "SERVER",
+			"value": "http://127.0.0.1:8100/api"
+		},
+		{
+			"key": "USER_TOKEN",
+			"value": ""
+		},
+		{
+			"key": "PROPERTY_ID",
+			"value": ""
+		},
+		{
+			"key": "PROPERTY_ID2",
+			"value": ""
+		}
+	]
+}
