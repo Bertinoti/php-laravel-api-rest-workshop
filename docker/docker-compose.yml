@@ -1,0 +1,82 @@
+version: "3.7"
+services:
+    app:        
+        build:
+            args: 
+                user: pekechis
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: assemblerlaravel8:1.0-php-fpm-80
+        container_name: laravelapi_app
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www
+        volumes: 
+            - ./src:/var/www
+        networks: 
+            - app-network    
+    mysql:
+        image: mysql:5.7.33
+        container_name: laravelapi_mysql
+        restart: unless-stopped
+        tty: true
+        environment: 
+            MYSQL_DATABASE: laravel8
+            MYSQL_ROOT_PASSWORD: 123456
+            MYSQL_PASSWORD: 123456
+            MYSQL_USER: laravel8
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        ports:
+            - 3346:3306
+        volumes: 
+            - ./mysql/data:/var/lib/mysql
+        networks:
+            - app-network    
+    nginx:
+        image: nginx:1.19.8-alpine
+        container_name: laravelapi_nginx
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - 8100:80
+        volumes: 
+            - ./src:/var/www
+            - ./nginx/conf:/etc/nginx/conf.d
+        networks: 
+            - app-network            
+    redis:
+        image: redis:6.2.1-buster
+        container_name: laravelapi_redis
+        restart: unless-stopped
+        tty: true
+        volumes: 
+            - ./redis/data:/data
+        networks: 
+            - app-network
+
+    mailhog:
+        image: mailhog/mailhog:v1.0.1
+        container_name: laravelapi_mailhog
+        restart: unless-stopped
+        ports: 
+            - 8025:8025
+        networks: 
+            - app-network 
+    # phpmyadmin:
+    #     image: phpmyadmin:5.1.0-apache
+    #     container_name: phpmyadmin
+    #     restart: unless-stopped
+    #     ports: 
+    #         - 8200:80
+    #     environment:
+    #         PMA_HOST: mysql
+    #         PMA_PORT: 3306
+    #         PMA_USER: laravel8
+    #         PMA_PASSWORD: 123456
+    #     networks:
+    #         - app-network          
+networks:
+    app-network:
+        driver: bridge
